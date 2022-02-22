@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+    <section class="section-pagetop bg">
+        <div class="container">
+            <h2 class="title-page">Our Store</h2>
+
+        </div> <!-- container //  -->
+    </section>
+    <!-- ========================= SECTION INTRO END// ========================= -->
+
+    <!-- ========================= SECTION CONTENT ========================= -->
+    <section class="section-content padding-y">
+        <div class="container">
+            <input type="file">
+            <div class="row">
+                <aside class="col-md-3">
+
+                    <div class="card">
+                        <article class="filter-group">
+                            <header class="card-header">
+                                <a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true"
+                                   class="">
+                                    <i class="icon-control fa fa-chevron-down"></i>
+                                    <h6 class="title">Categories</h6>
+                                </a>
+                            </header>
+                            <div class="filter-content collapse show" id="collapse_1" style="">
+                                <div class="card-body">
+
+                                    <ul class="list-menu">
+                                        {% for category  in categories %}
+                                            <li><a class="select-func"
+                                                    {% if current_category == category.id %}
+                                                   style="color: blue"
+                                                    {% endif %}
+
+                                                   data-category="{{ category.id }}">{{ category.name }}
+                                            </a></li>
+
+                                        {% endfor %}
+                                    </ul>
+
+                                </div> <!-- card-body.// -->
+                            </div>
+                        </article> <!-- filter-group  .// -->
+                        <article class="filter-group">
+                            <header class="card-header">
+                                <a href="#" data-toggle="collapse" data-target="#collapse_4" aria-expanded="true"
+                                   class="">
+                                    <i class="icon-control fa fa-chevron-down"></i>
+                                    <h6 class="title">Sizes </h6>
+                                </a>
+                            </header>
+                            <div class="filter-content collapse show" id="collapse_4" style="">
+                                <div class="card-body">
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox">
+                                        <span class="btn btn-light"> XS </span>
+                                    </label>
+
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox">
+                                        <span class="btn btn-light"> SM </span>
+                                    </label>
+
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox">
+                                        <span class="btn btn-light"> LG </span>
+                                    </label>
+
+                                    <label class="checkbox-btn">
+                                        <input type="checkbox">
+                                        <span class="btn btn-light"> XXL </span>
+                                    </label>
+                                </div><!-- card-body.// -->
+                            </div>
+                        </article> <!-- filter-group .// -->
+
+                        <article class="filter-group">
+                            <header class="card-header">
+                                <a href="#" data-toggle="collapse" data-target="#collapse_3" aria-expanded="true"
+                                   class="">
+                                    <i class="icon-control fa fa-chevron-down"></i>
+                                    <h6 class="title">Price range </h6>
+                                </a>
+                            </header>
+                            <div class="filter-content collapse show" id="collapse_3" style="">
+                                <div class="card-body">
+
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label>Min</label>
+                                            <!-- <input class="form-control" placeholder="$0" type="number"> -->
+                                            <input value="0" id="min_price" type="number" class="form-control">
+                                        </div>
+                                        <div class="form-group text-right col-md-6">
+                                            <label>Max</label>
+                                            <input value="0" id="max_price" type="number" class="form-control">
+                                        </div>
+                                    </div> <!-- form-row.// -->
+                                    <button class="btn btn-block btn-primary price_filter ">Apply</button>
+                                </div><!-- card-body.// -->
+                            </div>
+                        </article> <!-- filter-group .// -->
+
+                    </div> <!-- card.// -->
+
+                </aside> <!-- col.// -->
+                <main class="col-md-9">
+
+                    <header class="border-bottom mb-4 pb-3">
+                        <div class="form-inline">
+                            <span class="mr-md-auto">32 Items found </span>
+
+                            <select class="mr-2 form-control per-page">
+                                {% with p='3 6 9 12 15 18' %}
+                                    {% for i in  p.split %}
+                                        <option value="{{ i }}"
+                                                {% if paginator.per_page|stringformat:'i' == i %}
+                                                selected
+                                                {% endif %}
+                                        >{{ i }}</option>
+                                    {% endfor %}
+                                {% endwith %}
+                            </select>
+                            <select class="mr-2 form-control sorting">
+                                {% with p='Yangi Eski Qimmat Arzon ' %}
+                                    {% for i in  p.split %}
+                                        <option value="{{ i }}"
+                                                {% if sorting == i %}
+                                                selected
+                                                {% endif %}
+                                        >{{ i }}</option>
+                                    {% endfor %}
+                                {% endwith %}
+                            </select>
+
+                        </div>
+                    </header><!-- sect-heading -->
+
+                    <div class="row">
+                        {% for product in products %}
+                            <div class="col-md-4">
+                                {% include 'parts/product_cart.html' with object=product %}
+                            </div> <!-- col.// -->
+                        {% endfor %}
+                    </div> <!-- row end.// -->
+
+                    {% include 'parts/paginator.html' with paginator=paginator current_page=current_page %}
+
+                </main> <!-- col.// -->
+
+            </div>
+
+        </div> <!-- container .//  -->
+    </section>
+
+
+    <script>
+
+
+        $('.price_filter').click(function () {
+            min_price = $('#min_price').val()
+            max_price = $('#max_price').val()
+            if (min_price >= 0 && max_price >= 0) {
+                if (max_price == 0) {
+                    max_price = 1000000
+                    new_url = set_params(url, 'min_price', min_price)
+                    new_url = set_params(new_url, 'max_price', max_price)
+                    window.location.replace(new_url)
+                }
+                if (min_price >= max_price) {
+                    max_price = 1000000
+                    new_url = set_params(url, 'min_price', min_price)
+                    new_url = set_params(new_url, 'max_price', max_price)
+                    window.location.replace(new_url)
+                }
+                new_url = set_params(url, 'min_price', min_price)
+                new_url = set_params(new_url, 'max_price', max_price)
+                window.location.replace(new_url)
+            }
+        })
+
+
+        let url = window.location.href
+
+        $('.per-page').change(function () {
+            new_url = set_params(url, 'per-page', $(this).val())
+            window.location.replace(new_url)
+
+        })
+        $('.sorting').change(function () {
+            new_url = set_params(url, 'sorting', $(this).val())
+            window.location.replace(new_url)
+
+        })
+        $('.paging').click(function () {
+            new_url = set_params(url, 'page', $(this).data('value'))
+            window.location.replace(new_url)
+        })
+
+        $('.select-func').click(function () {
+
+            new_url = set_params(url, 'cat', $(this).data('category'))
+            window.location.replace(new_url)
+
+
+        })
+
+        function set_params(url, param, value) {
+
+            path = url.split('?')[0]
+            if (url.includes("?")) {
+                current_url = url.split('?')[1]
+                params = current_url.split('&')
+                let is_found = false
+                for (i = 0; i < params.length; i++) {
+                    if (params[i].split('=')[0] == param) {
+                        params[i] = `${param}=${value}`
+                        is_found = true
+                    }
+
+                }
+                current_url = params.join('&')
+                if (!is_found) {
+                    current_url += `&${param}=${value}`
+                }
+                url = path + '?' + current_url
+            } else {
+                current_url = `${param}=${value}`
+                url = path + '?' + current_url
+            }
+            return url
+
+
+        }
+    </script>
+{% endblock %}
+
